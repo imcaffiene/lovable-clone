@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
+    "@inngest/agent-kit": "^0.9.0",
     "@prisma/client": "^6.11.1",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.83.0",

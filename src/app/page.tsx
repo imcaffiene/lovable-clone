@@ -1,9 +1,12 @@
-import Image from "next/image";
+import prisma from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const user = await prisma.user.findMany();
+
+
   return (
-    <div> done
-
+    <div>
+      {JSON.stringify(user)}
     </div>
   );
 }
