@@ -1,12 +1,19 @@
-import prisma from "@/lib/prisma";
+"use client";
 
-export default async function Home() {
-  const user = await prisma.user.findMany();
+import { Button } from "@/components/ui/button";
+import { useTRPC } from "@/trpc/client";
+import { useMutation } from "@tanstack/react-query";
 
+
+export default function Home() {
+  const trpc = useTRPC();
+  const invoke = useMutation(trpc.invoke.mutationOptions({}));
 
   return (
     <div>
-      {JSON.stringify(user)}
+      <Button onClick={() => invoke.mutate({ text: "sumit" })}>
+        hello
+      </Button>
     </div>
   );
 }
