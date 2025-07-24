@@ -6,17 +6,27 @@ export const appRouter = createTRPCRouter({
   invoke: baseProcedure
     .input(
       z.object({
-        text: z.string(),
+        value: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      await inngest.send({
+      // Send the event to Inngest
+      const eventId = await inngest.send({
         name: "test/hello.world",
         data: {
-          email: input.text,
+          value: input.value,
         },
       });
+
+      // Return a meaningful response
+      return {
+        success: true,
+        message: "Summarization job started successfully",
+        eventId: eventId, // Inngest returns an event ID
+        inputValue: input.value,
+      };
     }),
+
   hello: baseProcedure
     .input(
       z.object({
@@ -29,4 +39,5 @@ export const appRouter = createTRPCRouter({
       };
     }),
 });
+
 export type AppRouter = typeof appRouter;
