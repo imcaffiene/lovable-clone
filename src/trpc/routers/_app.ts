@@ -1,43 +1,10 @@
-import { z } from "zod";
-import { baseProcedure, createTRPCRouter } from "../init";
-import { inngest } from "@/inngest/client";
+import { messagesRouter } from "@/components/modules/messages/server/procedures";
+import { createTRPCRouter } from "../init";
+import { projectsRouter } from "@/components/modules/projects/server/procedures";
 
 export const appRouter = createTRPCRouter({
-  invoke: baseProcedure
-    .input(
-      z.object({
-        value: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      // Send the event to Inngest
-      const eventId = await inngest.send({
-        name: "test/hello.world",
-        data: {
-          value: input.value,
-        },
-      });
-
-      // Return a meaningful response
-      return {
-        success: true,
-        message: "Summarization job started successfully",
-        eventId: eventId, // Inngest returns an event ID
-        inputValue: input.value,
-      };
-    }),
-
-  hello: baseProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .query((opts) => {
-      return {
-        greeting: `hello ${opts.input.text}`,
-      };
-    }),
+  messages: messagesRouter,
+  projects: projectsRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -32,8 +32,8 @@ export default function RootLayout({
           suppressHydrationWarning
         >
           {children}
+          <Toaster />
         </body>
-        <Toaster />
       </html>
     </TRPCReactProvider>
   );
