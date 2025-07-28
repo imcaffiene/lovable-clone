@@ -1,14 +1,21 @@
 'use client';
 
-import { useTRPC } from '@/trpc/client';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { MessagesContainer } from './MessagesContainer';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+import { Fragment } from "@/generated/prisma";
+import { ProjectHeader } from "./ProjectHeader";
+import { FragmentWeb } from "./FragmentWeb";
+import { Tabs } from "@radix-ui/react-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Code2Icon, CrownIcon, EyeIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { CodeView } from "@/components/modules/code-view/CodeView";
 
 
 interface Props {
@@ -17,8 +24,13 @@ interface Props {
 
 export const ProjectView = ({ projectId }: Props) => {
 
+  const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
+  const [tab, setTab] = useState<"code" | "preview">("preview");
+
   return (
     <div className='h-screen'>
+
+      {/* LEFT PANEL: Chat Interface */}
       <ResizablePanelGroup direction='horizontal'>
         <ResizablePanel
           defaultSize={35}
@@ -26,20 +38,107 @@ export const ProjectView = ({ projectId }: Props) => {
           className='flex flex-col min-h-0'
         >
           <Suspense fallback={<p>loading...</p>}>
-            <MessagesContainer projectId={projectId} />
+            <ProjectHeader projectId={projectId} />
+          </Suspense>
+
+          <Suspense fallback={<p>loading...</p>}>
+            <MessagesContainer
+              projectId={projectId}
+              activeFragment={activeFragment}
+              setActiveFragment={setActiveFragment}
+            />
           </Suspense>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
+
+        {/* RIGHT PANEL: App Preview */}
         <ResizablePanel
           defaultSize={65}
           minSize={50}
         >
-          todo:preview
+          <Tabs
+            className="h-full gap-y-0"
+            defaultValue="preview"
+            value={tab}
+            onValueChange={(value) => setTab(value as "code" | "preview")}
+          >
+            <div className="w-full flex items-center p-2 border-b gap-x-2">
+              <TabsList className="h-8 p-0 border rounded-md">
+                <TabsTrigger value="preview" className="rounded-md">
+                  <EyeIcon /> <span>Live</span>
+                </TabsTrigger>
+
+                <TabsTrigger value="code" className="rounded-md">
+                  <Code2Icon /> <span>Code</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="ml-auto flex items-center gap-x-2">
+                <Button asChild size={"sm"} variant={"default"}>
+                  <Link href={"/pricing"}>
+                    <CrownIcon /> Upgrade
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            <TabsContent value="preview">
+              {!!activeFragment && <FragmentWeb data={activeFragment} />}
+            </TabsContent>
+
+            <TabsContent value="code">
+              <CodeView
+                lang="tsx"
+                code={
+                  `import { Fragment } from "@/generated/prisma";
+                
+                const fragment: Fragment = {
+                  id: "123",
+                  title: "My First Fragment",
+                  files: {
+                    "/home/user/app/page.tsx": {
+                      content: "import { Button } from '@/components/ui/button';",
+                      createdAt: new Date(),
+                      updatedAt: new Date()
+                    }
+                  },
+                  createdAt: new Date(),
+                  updatedAt: new Date()
+                };
+                
+                export default fragment;`
+                }
+              />
+            </TabsContent>
+          </Tabs>
         </ResizablePanel>
       </ResizablePanelGroup>
-    </div>
+    </div >
   );
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ ProjectView (Parent)
+├── MessagesContainer (Left Panel) - Chat interface
+└── Preview Panel (Right Panel) - Generated app display
+
+ */
