@@ -10,7 +10,7 @@ import {
 import { Sandbox } from "@e2b/code-interpreter";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
 import { z } from "zod";
-import { PROMPT } from "@/prompt";
+import { PROMPT } from "@/lib/prompt";
 import prisma from "@/lib/prisma";
 
 interface AgentState {

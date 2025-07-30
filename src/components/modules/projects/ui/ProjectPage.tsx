@@ -16,6 +16,7 @@ import { Code2Icon, CrownIcon, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CodeView } from "@/components/modules/code-view/CodeView";
+import { FileExplorer } from "@/fileExplorer";
 
 
 interface Props {
@@ -88,29 +89,10 @@ export const ProjectView = ({ projectId }: Props) => {
               {!!activeFragment && <FragmentWeb data={activeFragment} />}
             </TabsContent>
 
-            <TabsContent value="code">
-              <CodeView
-                lang="tsx"
-                code={
-                  `import { Fragment } from "@/generated/prisma";
-                
-                const fragment: Fragment = {
-                  id: "123",
-                  title: "My First Fragment",
-                  files: {
-                    "/home/user/app/page.tsx": {
-                      content: "import { Button } from '@/components/ui/button';",
-                      createdAt: new Date(),
-                      updatedAt: new Date()
-                    }
-                  },
-                  createdAt: new Date(),
-                  updatedAt: new Date()
-                };
-                
-                export default fragment;`
-                }
-              />
+            <TabsContent value="code" className="min-h-0">
+              {!!activeFragment?.files && (
+                <FileExplorer files={activeFragment.files as { [path: string]: string; }} />
+              )}
             </TabsContent>
           </Tabs>
         </ResizablePanel>
