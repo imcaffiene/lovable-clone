@@ -10,7 +10,6 @@ import { CopyCheckIcon, CopyIcon } from "lucide-react";
 import { CodeView } from "@/components/modules/code-view/CodeView";
 import { convertFilesToTreeItem } from "@/lib/utils";
 import { TreeView } from "@/components/treeView";
-import { max } from "date-fns";
 import { Breadcrumb, BreadcrumbEllipsis, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 type FileCollection = { [path: string]: string; }; //(map of paths to code/content)

@@ -35,7 +35,7 @@ export const FragmentWeb = ({ data }: Props) => {
   };
 
   return (
-    <div className='flex flex-col w-full h-full'>
+    <div className='flex flex-col w-full h-full overflow-hidden'>
       <div className='p-2 border-b bg-sidebar flex items-center gap-x-2'>
 
         {/* REFRESH BUTTON */}
@@ -82,7 +82,7 @@ export const FragmentWeb = ({ data }: Props) => {
 
       <iframe
         key={fragmentKey}
-        className='h-full w-full'
+        className="flex-1 w-full"
         sandbox='allow-scripts allow-same-origin allow-forms'
         loading='lazy'
         src={data.sandboxUrl}

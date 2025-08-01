@@ -15,8 +15,7 @@ import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Code2Icon, CrownIcon, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { CodeView } from "@/components/modules/code-view/CodeView";
-import { FileExplorer } from "@/fileExplorer";
+import { FileExplorer } from "@/lib/fileExplorer";
 
 
 interface Props {
@@ -85,7 +84,7 @@ export const ProjectView = ({ projectId }: Props) => {
               </div>
             </div>
 
-            <TabsContent value="preview">
+            <TabsContent value="preview" className="h-full w-full p-0">
               {!!activeFragment && <FragmentWeb data={activeFragment} />}
             </TabsContent>
 
