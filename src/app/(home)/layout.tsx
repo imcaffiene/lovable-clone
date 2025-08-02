@@ -1,3 +1,5 @@
+import { Navbar } from "@/components/modules/home/Navbar";
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -31,6 +33,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <main className="min-h-screen w-full bg-background text-foreground relative">
+
+      <Navbar />
+
       {/* Pattern Background - Separate layers for light/dark */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Light pattern */}
