@@ -8,8 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowUpIcon, Loader2Icon } from 'lucide-react';
 import { useTRPC } from '@/trpc/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Usage } from './Usage';
+import { useRouter } from 'next/navigation';
 
 interface MessageFormProps {
   projectId: string;
@@ -23,11 +25,11 @@ const formSchema = z.object({
 
 export const MessageForm = ({ projectId }: MessageFormProps) => {
 
-  const [isFocused, setIsFocused] = useState(false);
-  const showUsage = false;
-
   const trpc = useTRPC();
+  const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { data: usage } = useQuery(trpc.usage.status.queryOptions());
 
   const createMessage = useMutation(trpc.messages.create.mutationOptions({
     onSuccess: (data) => {
@@ -35,10 +37,16 @@ export const MessageForm = ({ projectId }: MessageFormProps) => {
       queryClient.invalidateQueries( // Refresh messages list to show new message + AI response
         trpc.messages.getMany.queryOptions({ projectId })
       );
-      // TODO: invalidate usage status
+      queryClient.invalidateQueries(
+        trpc.usage.status.queryOptions()
+      );
     },
     onError: (error) => {
       toast.error(error.message);
+
+      if (error.data?.code === "TOO_MANY_REQUESTS") {
+        router.push("/pricing");
+      }
     }
   }));
 
@@ -56,11 +64,22 @@ export const MessageForm = ({ projectId }: MessageFormProps) => {
     });
   };
 
+  const [isFocused, setIsFocused] = useState(false);
+  const showUsage = !!usage;
+
   const isPending = createMessage.isPending; // Is message being sent?
   const isButtonDisabled = isPending || !form.formState.isValid; // Disable if sending or invalid
 
   return (
     <Form {...form}>
+
+      {showUsage && (
+        <Usage
+          points={usage.remainingPoints}
+          msBeforeNext={usage.msBeforeNext}
+        />
+      )}
+
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn(
