@@ -32,7 +32,7 @@ export const MessageForm = ({ projectId }: MessageFormProps) => {
   const { data: usage } = useQuery(trpc.usage.status.queryOptions());
 
   const createMessage = useMutation(trpc.messages.create.mutationOptions({
-    onSuccess: (data) => {
+    onSuccess: () => {
       form.reset();
       queryClient.invalidateQueries( // Refresh messages list to show new message + AI response
         trpc.messages.getMany.queryOptions({ projectId })
