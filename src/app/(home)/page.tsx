@@ -1,6 +1,6 @@
 import { ProjectForm } from "@/components/modules/home/ProjectForm";
 import { ProjectList } from "@/components/modules/home/ProjectList";
-import Image from "next/image";
+import CaffeineLogo from "@/components/modules/logo/CaffeineLogo";
 
 
 
@@ -12,13 +12,9 @@ export default function Home() {
     <div className="flex flex-col max-w-5xl mx-auto w-full">
       <section className="space-y-6 py-[16vh] 2xl:py-48">
         <div className="flex flex-col items-center">
-          <Image
-            src={"/logo.svg"}
-            alt="Caffeine"
-            width={50}
-            height={50}
-            className="hidden md:block"
-          />
+
+
+          <CaffeineLogo size="lg" variant="icon" className="hidden md:block" />
         </div>
 
         <h1 className="text-xl md:text-4xl font-bold text-center">

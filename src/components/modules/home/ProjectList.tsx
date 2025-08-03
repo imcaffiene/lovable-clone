@@ -5,8 +5,8 @@ import { useTRPC } from "@/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import Image from "next/image";
 import Link from "next/link";
+import CaffeineLogo from "../logo/CaffeineLogo";
 
 export const ProjectList = () => {
 
@@ -36,13 +36,15 @@ export const ProjectList = () => {
             asChild
           >
             <Link href={`projects/${project.id}`}>
-              <Image
+              {/* <Image
                 src={"/logo.svg"}
                 alt="Caffeine"
                 width={32}
                 height={32}
                 className="object-contain"
-              />
+              /> */}
+
+              <CaffeineLogo size="sm" variant="icon" />
               <div className="flex flex-col">
                 <h3 className="truncate font-medium">
                   {project.name}

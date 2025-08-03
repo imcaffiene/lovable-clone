@@ -14,6 +14,7 @@ import { getSandbox, lastAssistantTextMessageContent } from "./utils";
 import { z } from "zod";
 import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/lib/prompt";
 import prisma from "@/lib/prisma";
+import { SANDBOX_TIMEOUT } from "./types";
 
 interface AgentState {
   summary: string;
@@ -31,8 +32,8 @@ export const codeAgentFunction = inngest.createFunction(
     // CREATE E2B SANDBOX ENVIRONMENT
     // Creates an isolated cloud environment where AI can run code
     const sandboxId = await step.run("get-sandbox-id", async () => {
-      // Create new sandbox with "caffiene" template (Next.js pre-installed)
       const sandbox = await Sandbox.create("caffiene");
+      await sandbox.setTimeout(SANDBOX_TIMEOUT);
       return sandbox.sandboxId; // Return unique ID for this sandbox
     });
 
@@ -41,13 +42,15 @@ export const codeAgentFunction = inngest.createFunction(
       async () => {
         const formattedMessages: Message[] = [];
 
+        // FETCH RECENT CONVERSATION HISTORY
         const messages = await prisma.message.findMany({
           where: {
             projectId: event.data.projectId,
           },
           orderBy: {
-            createdAt: "asc",
+            createdAt: "desc",
           },
+          take: 6,
         });
 
         for (const message of messages) {
@@ -57,7 +60,7 @@ export const codeAgentFunction = inngest.createFunction(
             content: message.content,
           });
         }
-        return formattedMessages;
+        return formattedMessages.reverse();
       }
     );
 
@@ -77,10 +80,6 @@ export const codeAgentFunction = inngest.createFunction(
       name: "codeAgent",
       description: "You are expert coding agent",
       system: PROMPT,
-
-      // model: gemini({
-      //   model: "gemini-1.5-flash-8b",
-      // }),
 
       model: openai({
         model: "gpt-4.1",
@@ -254,13 +253,13 @@ export const codeAgentFunction = inngest.createFunction(
       description: "fragment title generator",
       system: FRAGMENT_TITLE_PROMPT,
 
-      // model: gemini({
-      //   model: "gemini-1.5-flash-8b",
-      // }),
-
-      model: openai({
-        model: "gpt-4o",
+      model: gemini({
+        model: "gemini-1.5-flash-8b",
       }),
+
+      // model: openai({
+      //   model: "gpt-4o",
+      // }),
     });
 
     const responseGenerator = createAgent({
@@ -268,13 +267,13 @@ export const codeAgentFunction = inngest.createFunction(
       description: "response generator",
       system: RESPONSE_PROMPT,
 
-      // model: gemini({
-      //   model: "gemini-1.5-flash-8b",
-      // }),
-
-      model: openai({
-        model: "gpt-4o",
+      model: gemini({
+        model: "gemini-1.5-flash-8b",
       }),
+
+      // model: openai({
+      //   model: "gpt-4o",
+      // }),
     });
 
     const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(

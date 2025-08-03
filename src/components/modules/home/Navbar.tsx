@@ -5,8 +5,8 @@ import { UserControls } from "@/components/utils/UserControls";
 import { useScroll } from "@/hooks/use-scroll";
 import { cn } from "@/lib/utils";
 import { SignedOut, SignInButton, SignUpButton, SignedIn } from "@clerk/nextjs";
-import Image from "next/image";
 import Link from "next/link";
+import CaffeineLogo from "../logo/CaffeineLogo";
 
 
 export function Navbar() {
@@ -22,12 +22,8 @@ export function Navbar() {
     >
       <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
         <Link href={"/"} className="flex items-center gap-2">
-          <Image
-            src={"/logo.svg"}
-            alt="Logo"
-            width={24}
-            height={24}
-          />
+
+          <CaffeineLogo size="sm" variant="icon" />
           <span className="font-semibold text-lg">Caffiene</span>
         </Link>
 
