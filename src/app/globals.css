@@ -119,4 +119,43 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Custom Scrollbar Styling */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.552 0.016 285.938) transparent;
+  }
+
+  /* Webkit Scrollbar (Chrome, Safari, Edge) */
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: oklch(0.552 0.016 285.938);
+    border-radius: 3px;
+    border: none;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.705 0.015 286.067);
+  }
+
+  /* Dark mode scrollbar */
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: oklch(0.274 0.006 286.033);
+  }
+
+  .dark *::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.552 0.016 285.938);
+  }
+
+  .dark * {
+    scrollbar-color: oklch(0.274 0.006 286.033) transparent;
+  }
 }

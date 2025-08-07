@@ -7,11 +7,14 @@ import { cn } from "@/lib/utils";
 import { SignedOut, SignInButton, SignUpButton, SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
 import CaffeineLogo from "../logo/CaffeineLogo";
+import { MoonIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 
 export function Navbar() {
 
   const isScrolled = useScroll();
+  const { theme, setTheme } = useTheme();
 
   return (
     <nav className=
@@ -21,11 +24,16 @@ export function Navbar() {
       )}
     >
       <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
-        <Link href={"/"} className="flex items-center gap-2">
+        <div className="flex items-center gap-12">
+          <Link href={"/"} className="flex items-center gap-2">
+            <CaffeineLogo size="sm" variant="icon" />
+            <span className="font-semibold text-lg">Caffiene</span>
+          </Link>
 
-          <CaffeineLogo size="sm" variant="icon" />
-          <span className="font-semibold text-lg">Caffiene</span>
-        </Link>
+          <Link href={"/pricing"} className="text-sm font-medium hover:text-primary transition-colors">
+            Pricing
+          </Link>
+        </div>
 
         <SignedOut>
           <div className="flex gap-2">
@@ -44,7 +52,19 @@ export function Navbar() {
         </SignedOut>
 
         <SignedIn>
-          <UserControls showName />
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="h-8 w-8"
+            >
+              <SunIcon className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <MoonIcon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+            <UserControls showName />
+          </div>
         </SignedIn>
       </div>
     </nav>

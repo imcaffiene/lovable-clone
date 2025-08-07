@@ -37,7 +37,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Navbar />
 
       {/* Pattern Background - Separate layers for light/dark */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Light pattern */}
         <div
           className="absolute inset-0 opacity-50 dark:opacity-0 transition-opacity duration-300"
@@ -51,7 +51,7 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Content Container */}
-      <div className="flex flex-col min-h-screen max-h-screen relative z-10">
+      <div className="flex flex-col min-h-screen relative z-10">
         <div className="flex-1 flex flex-col px-4 pb-4">
           {children}
         </div>

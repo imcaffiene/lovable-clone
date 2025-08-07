@@ -31,16 +31,15 @@ export const Usage = ({ points, msBeforeNext }: UsageProps) => {
   }, [msBeforeNext]);
 
   return (
-    <div className="rounded-t-xl bg-background border border-b p-2.5">
+    <div className="rounded-t-xl bg-sidebar dark:bg-sidebar border border-b-0 p-3">
       <div className="flex items-center gap-x-2">
-        <div>
-
-          <p className="text-sm">
-            {points} {hasProAccess ? "" : "free"} credits remaining
+        <div className="flex-1">
+          <p className="text-sm font-medium text-foreground">
+            <span className="font-semibold text-primary">{points}</span> {hasProAccess ? "" : "free"} credits remaining
           </p>
 
-          <p className="text-xs text-muted-foreground">
-            Reset in {" "} {resetTime}
+          <p className="text-xs text-foreground/80 mt-0.5">
+            Reset in <span className="font-medium">{resetTime}</span>
           </p>
         </div>
 

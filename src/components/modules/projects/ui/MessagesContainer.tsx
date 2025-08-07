@@ -1,5 +1,5 @@
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { MessageCard } from "./MessageCard";
 import { MessageForm } from "./MessageForm";
 import { useEffect, useRef } from "react";
@@ -23,6 +23,10 @@ export const MessagesContainer = ({
 
   const trpc = useTRPC();
 
+  // Check if usage should be shown
+  const { data: usage } = useQuery(trpc.usage.status.queryOptions());
+  const showUsage = !!usage;
+
   // Fetch all messages for this project
   const { data: messages } = useSuspenseQuery(
     trpc.messages.getMany.queryOptions(
@@ -30,8 +34,15 @@ export const MessagesContainer = ({
         projectId,
       },
       {
-        //todo -> temp live message update
-        refetchInterval: 5000,
+        // Smart polling: faster when expecting AI response, slower when idle
+        refetchInterval: (query) => {
+          const data = query.state.data;
+          if (!data || !Array.isArray(data)) return 10000;
+          const lastMessage = data[data.length - 1];
+          const isWaitingForAI = lastMessage?.role === "USER";
+          return isWaitingForAI ? 2000 : 10000; // 2s when waiting, 10s when idle
+        },
+        refetchIntervalInBackground: false, // Don't poll when tab is not active
       }
     )
   );
@@ -85,7 +96,10 @@ export const MessagesContainer = ({
       </div>
 
       <div className='relative p-3 pt-1'>
-        <div className='absolute top-6 left-0 right-0 h-6 bg-gradient-to-b from-transparent to-background pointer-events-none' />
+        <div
+          className={`absolute left-0 right-0 h-6 bg-gradient-to-b from-transparent to-background pointer-events-none ${showUsage ? 'top-16' : 'top-6'
+            }`}
+        />
 
         <MessageForm projectId={projectId} />
       </div>

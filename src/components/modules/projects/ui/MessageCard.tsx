@@ -4,12 +4,13 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ChevronRight, Code2Icon } from 'lucide-react';
 import Image from 'next/image';
+import { memo } from 'react';
 
 interface UserMessageProps {
   content: string;
 }
 
-const UserMessage = ({ content }: UserMessageProps) => {
+const UserMessage = memo(({ content }: UserMessageProps) => {
   return (
     <div className='flex justify-end pb-4 pr-2 pl-10'>
       <Card className='rounded-lg bg-muted p-3 shadow-none border-none max-w-[80%] break-words'>
@@ -17,7 +18,9 @@ const UserMessage = ({ content }: UserMessageProps) => {
       </Card>
     </div>
   );
-};
+});
+
+UserMessage.displayName = 'UserMessage';
 
 interface FragmentCardProps {
   fragment: Fragment;
@@ -25,7 +28,7 @@ interface FragmentCardProps {
   onFragmentClick: (fragment: Fragment) => void;
 }
 
-const FragmentCard = ({
+const FragmentCard = memo(({
   fragment,
   isActiveFragment,
   onFragmentClick
@@ -33,11 +36,13 @@ const FragmentCard = ({
   return (
     <button
       className={cn(
-        "flex items-start text-start gap-2 border rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors",
+        "flex items-start text-start gap-2 border rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         isActiveFragment &&
         "bg-primary text-primary-foreground border-primary hover:bg-primary"
       )}
       onClick={() => onFragmentClick(fragment)}
+      aria-label={`View ${fragment.title} fragment`}
+      aria-pressed={isActiveFragment}
     >
       <Code2Icon className='size-4 mt-0.5' />
 
@@ -54,7 +59,9 @@ const FragmentCard = ({
       </div>
     </button>
   );
-};
+});
+
+FragmentCard.displayName = 'FragmentCard';
 
 interface AssistantMessageProps {
   content: string;
@@ -65,7 +72,7 @@ interface AssistantMessageProps {
   type: MessageType;
 }
 
-const AssistantMessage = ({
+const AssistantMessage = memo(({
   content,
   createdAt,
   fragment,
@@ -111,7 +118,9 @@ const AssistantMessage = ({
       </div>
     </div>
   );
-};
+});
+
+AssistantMessage.displayName = 'AssistantMessage';
 
 interface MessageCardProps {
   content: string;
@@ -123,7 +132,7 @@ interface MessageCardProps {
   type: MessageType;
 };
 
-export const MessageCard = ({
+export const MessageCard = memo(({
   content,
   createdAt,
   fragment,
@@ -150,7 +159,9 @@ export const MessageCard = ({
     <UserMessage content={content} />
   );
 
-}
+});
+
+MessageCard.displayName = 'MessageCard';
 
 
 

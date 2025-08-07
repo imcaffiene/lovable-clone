@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormField } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowUpIcon, Loader2Icon } from 'lucide-react';
@@ -23,7 +23,7 @@ const formSchema = z.object({
     .max(10000, { message: "Value is too long" })
 });
 
-export const MessageForm = ({ projectId }: MessageFormProps) => {
+export const MessageForm = memo(({ projectId }: MessageFormProps) => {
 
   const trpc = useTRPC();
   const router = useRouter();
@@ -65,10 +65,30 @@ export const MessageForm = ({ projectId }: MessageFormProps) => {
   };
 
   const [isFocused, setIsFocused] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const showUsage = !!usage;
 
   const isPending = createMessage.isPending; // Is message being sent?
   const isButtonDisabled = isPending || !form.formState.isValid; // Disable if sending or invalid
+
+  // Global keyboard shortcut to focus message input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape key focuses the message input
+      if (e.key === 'Escape' && textareaRef.current) {
+        e.preventDefault();
+        textareaRef.current.focus();
+      }
+      // Cmd/Ctrl + K also focuses the message input
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <Form {...form}>
@@ -94,11 +114,12 @@ export const MessageForm = ({ projectId }: MessageFormProps) => {
           render={({ field }) => (
             <Textarea
               {...field}
+              ref={textareaRef}
               disabled={isPending}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               className='pt-4 resize-none border-none w-full outline-none bg-transparent'
-              placeholder='What would you like to build?'
+              placeholder='What would you like to build? (Esc to focus, ⌘+Enter to send)'
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                   e.preventDefault();
@@ -137,5 +158,7 @@ export const MessageForm = ({ projectId }: MessageFormProps) => {
       </form>
     </Form>
   );
-};
+});
+
+MessageForm.displayName = 'MessageForm';
 

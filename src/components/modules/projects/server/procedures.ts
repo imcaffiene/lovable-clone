@@ -33,15 +33,37 @@ export const projectsRouter = createTRPCRouter({
 
   // fetch the project list
   getMany: protectedProcedure.query(async ({ ctx }) => {
-    const project = await prisma.project.findMany({
+    const projects = await prisma.project.findMany({
       where: {
         userId: ctx.auth.userId,
+      },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1, // Get only the latest message
+          select: {
+            createdAt: true,
+          },
+        },
       },
       orderBy: {
         updatedAt: "desc",
       },
     });
-    return project;
+
+    // Transform the data to include lastActivity and sort by actual last activity
+    const projectsWithActivity = projects.map((project) => ({
+      ...project,
+      lastActivity: project.messages[0]?.createdAt || project.updatedAt,
+    }));
+
+    // Sort by lastActivity (most recent first)
+    return projectsWithActivity.sort(
+      (a, b) =>
+        new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime()
+    );
   }),
 
   // create a project
@@ -96,6 +118,39 @@ export const projectsRouter = createTRPCRouter({
         },
       });
       return createProjects;
+    }),
+
+  // delete a project
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1, { message: "ID is required" }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const existingProject = await prisma.project.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.auth.userId,
+        },
+      });
+
+      if (!existingProject) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      // Delete the project (this will cascade delete messages and fragments due to Prisma relations)
+      await prisma.project.delete({
+        where: {
+          id: input.id,
+          userId: ctx.auth.userId,
+        },
+      });
+
+      return { success: true };
     }),
 });
 
